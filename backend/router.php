@@ -24,22 +24,38 @@ $endpoint = $parts[0] ?? '';
 $id = $parts[1] ?? null;
 
 // Response helper
-function jsonResponse(array $data, int $code = 200): void {
-    http_response_code($code);
+function jsonResponse(array $data, int $code = 0): void {
+    // Only set code if explicitly provided (non-zero)
+    if ($code > 0) {
+        http_response_code($code);
+    }
     header('Content-Type: application/json');
     echo json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     exit;
 }
 
-// Require auth for protected routes
-$protected = !in_array($endpoint, ['auth', 'status', 'products', '']);
+$publicEndpoints = ['auth', 'status', 'products'];
 
-if ($protected && empty($personId)) {
-    http_response_code(401);
-    jsonResponse([
-        'error' => 'Unauthorized',
-        'message' => 'X-Person-Id header is required'
-    ]);
+// Route exists check - if endpoint doesn't match any case, it will be caught by default
+$validEndpoints = ['auth', 'account', 'products', 'expenses', 'tamalbits', 'status'];
+
+// Require auth for protected routes
+if (!empty($endpoint) && !in_array($endpoint, $publicEndpoints)) {
+    if (!in_array($endpoint, $validEndpoints)) {
+        // Endpoint doesn't exist - 404 before auth check
+        http_response_code(404);
+        jsonResponse([
+            'error' => 'Not Found',
+            'message' => 'Endpoint not found: ' . $endpoint
+        ]);
+    }
+    if (empty($personId)) {
+        http_response_code(401);
+        jsonResponse([
+            'error' => 'Unauthorized',
+            'message' => 'X-Person-Id header is required'
+        ]);
+    }
 }
 
 // Route handling
@@ -47,61 +63,73 @@ try {
     switch ($endpoint) {
         // Auth
         case 'auth':
-            if ($requestMethod === 'POST') {
-                require_once __DIR__ . '/api/auth.php';
-                $result = handleLogin();
-                // Check for 404 in response
-                if (isset($result['user_exists'])) {
-                    $statusCode = $result['user_exists'] ? 200 : 404;
-                } else {
-                    $statusCode = 200;
-                }
-                header('Content-Type: application/json');
-                http_response_code($statusCode);
-                echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-                exit;
+            if ($requestMethod !== 'POST') {
+                http_response_code(405);
+                jsonResponse(['error' => 'Method Not Allowed']);
             }
-            break;
+            require_once __DIR__ . '/api/auth.php';
+            $result = handleLogin();
+            // Check for 404 in response
+            if (isset($result['user_exists'])) {
+                $statusCode = $result['user_exists'] ? 200 : 404;
+            } else {
+                $statusCode = 200;
+            }
+            header('Content-Type: application/json');
+            http_response_code($statusCode);
+            echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+            exit;
             
         // Account
         case 'account':
+            if ($requestMethod !== 'GET' && $requestMethod !== 'POST') {
+                http_response_code(405);
+                jsonResponse(['error' => 'Method Not Allowed']);
+            }
+            require_once __DIR__ . '/api/account.php';
             if ($requestMethod === 'GET') {
-                require_once __DIR__ . '/api/account.php';
                 jsonResponse(handleGetAccount($personId));
-            } elseif ($requestMethod === 'POST') {
-                require_once __DIR__ . '/api/account.php';
+            } else {
                 jsonResponse(handleDeductAccount($personId));
             }
             break;
             
         // Products
         case 'products':
+            if ($requestMethod !== 'GET') {
+                http_response_code(405);
+                jsonResponse(['error' => 'Method Not Allowed']);
+            }
             require_once __DIR__ . '/api/products.php';
-            if ($requestMethod === 'GET') {
-                if ($id) {
-                    jsonResponse(handleGetProduct((int) $id));
-                } else {
-                    jsonResponse(handleGetProducts());
-                }
+            if ($id) {
+                jsonResponse(handleGetProduct((int) $id));
+            } else {
+                jsonResponse(handleGetProducts());
             }
             break;
             
         // Expenses
         case 'expenses':
+            if ($requestMethod !== 'GET' && $requestMethod !== 'POST') {
+                http_response_code(405);
+                jsonResponse(['error' => 'Method Not Allowed']);
+            }
             require_once __DIR__ . '/api/expenses.php';
             if ($requestMethod === 'GET') {
                 jsonResponse(handleGetExpenses($personId));
-            } elseif ($requestMethod === 'POST') {
+            } else {
                 jsonResponse(handleCreateExpense($personId));
             }
             break;
             
         // Tamalbits
         case 'tamalbits':
-            require_once __DIR__ . '/api/tamalbits.php';
-            if ($requestMethod === 'GET') {
-                jsonResponse(handleGetTamalbits($personId));
+            if ($requestMethod !== 'GET') {
+                http_response_code(405);
+                jsonResponse(['error' => 'Method Not Allowed']);
             }
+            require_once __DIR__ . '/api/tamalbits.php';
+            jsonResponse(handleGetTamalbits($personId));
             break;
             
         // Status
