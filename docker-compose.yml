@@ -32,9 +32,9 @@ services:
     ports:
       - "3000:3000"
     environment:
-      PGRST_DB_URI: postgres://admin:adminpassword@db:5432/tamalbank-db
+      PGRST_DB_URI: postgres://tamalbank-user:tamalbank-password@db:5432/tamalbank-db
       PGRST_DB_SCHEMA: public
-      PGRST_DB_ANON_ROLE: admin
+      PGRST_DB_ANON_ROLE: tamalbank-user
     depends_on:
       - db
 
