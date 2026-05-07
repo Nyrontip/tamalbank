@@ -33,7 +33,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"person_id\": \"{{personId}}\"\n}"
+              "raw": "{\"person_id\": \"{{personId}}\"}"
             }
           }
         }
@@ -46,13 +46,7 @@
           "name": "Get Balance",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/account/{{personId}}",
-            "header": [
-              {
-                "key": "X-Person-Id",
-                "value": "{{personId}}"
-              }
-            ]
+            "url": "{{baseUrl}}/account/{{personId}}"
           }
         },
         {
@@ -64,15 +58,11 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "X-Person-Id",
-                "value": "{{personId}}"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"amount\": 10,\n  \"reason\": \"Prueba de descuento\"\n}"
+              "raw": "{\"amount\": 10, \"reason\": \"Prueba de descuento\"}"
             }
           }
         }
@@ -85,16 +75,14 @@
           "name": "List All Products",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/products",
-            "header": []
+            "url": "{{baseUrl}}/products"
           }
         },
         {
           "name": "Get Product by ID",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/products/1",
-            "header": []
+            "url": "{{baseUrl}}/products/1"
           }
         },
         {
@@ -105,14 +93,8 @@
               "raw": "{{baseUrl}}/products",
               "host": ["{{baseUrl}}"],
               "path": ["products"],
-              "query": [
-                {
-                  "key": "type",
-                  "value": "alimentacion"
-                }
-              ]
-            },
-            "header": []
+              "query": [{"key": "type", "value": "alimentacion"}]
+            }
           }
         }
       ]
@@ -121,129 +103,27 @@
       "name": "Expenses",
       "item": [
         {
-          "name": "Create Expense - Orejas de Pollo",
+          "name": "Get Expenses by User",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/expenses/{{personId}}"
+          }
+        },
+        {
+          "name": "Create Expense",
           "request": {
             "method": "POST",
-            "url": "{{baseUrl}}/expenses",
+            "url": "{{baseUrl}}/expenses/{{personId}}",
             "header": [
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "X-Person-Id",
-                "value": "{{personId}}"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"product_id\": 1,\n  \"type\": \"alimentacion\",\n  \"description\": \"Orejas de Pollo para el lunch\"\n}"
+              "raw": "{\"product_id\": 1, \"type\": \"alimentacion\", \"description\": \"Orejas de Pollo\"}"
             }
-          }
-        },
-        {
-          "name": "Create Expense - Servicio de Luz",
-          "request": {
-            "method": "POST",
-            "url": "{{baseUrl}}/expenses",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "X-Person-Id",
-                "value": "{{personId}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"product_id\": 6,\n  \"type\": \"servicios\",\n  \"description\": \"Pago de servicio de luz\"\n}"
-            }
-          }
-        },
-        {
-          "name": "Create Expense - Pasaje Público",
-          "request": {
-            "method": "POST",
-            "url": "{{baseUrl}}/expenses",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "X-Person-Id",
-                "value": "{{personId}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"product_id\": 7,\n  \"type\": \"transporte\",\n  \"description\": \"Pasaje al centro\"\n}"
-            }
-          }
-        },
-        {
-          "name": "Get All Expenses",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/expenses",
-            "header": [
-              {
-                "key": "X-Person-Id",
-                "value": "{{personId}}"
-              }
-            ]
-          }
-        },
-        {
-          "name": "Get Expenses with Pagination",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/expenses",
-              "host": ["{{baseUrl}}"],
-              "path": ["expenses"],
-              "query": [
-                {
-                  "key": "limit",
-                  "value": "5"
-                },
-                {
-                  "key": "offset",
-                  "value": "0"
-                }
-              ]
-            },
-            "header": [
-              {
-                "key": "X-Person-Id",
-                "value": "{{personId}}"
-              }
-            ]
-          }
-        },
-        {
-          "name": "Filter Expenses by Category",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/expenses",
-              "host": ["{{baseUrl}}"],
-              "path": ["expenses"],
-              "query": [
-                {
-                  "key": "type",
-                  "value": "alimentacion"
-                }
-              ]
-            },
-            "header": [
-              {
-                "key": "X-Person-Id",
-                "value": "{{personId}}"
-              }
-            ]
           }
         }
       ]
@@ -252,16 +132,10 @@
       "name": "Tamalbits",
       "item": [
         {
-          "name": "Get Total Tamalbits",
+          "name": "Get Tamalbits by User",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/tamalbits",
-            "header": [
-              {
-                "key": "X-Person-Id",
-                "value": "{{personId}}"
-              }
-            ]
+            "url": "{{baseUrl}}/tamalbits/{{personId}}"
           }
         }
       ]
@@ -273,8 +147,7 @@
           "name": "Get API Status",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/status",
-            "header": []
+            "url": "{{baseUrl}}/status"
           }
         }
       ]
