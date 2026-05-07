@@ -106,7 +106,16 @@
           "name": "Get Expenses by User",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/expenses/{{personId}}"
+            "url": {
+              "raw": "{{baseUrl}}/expenses/{{personId}}?limit=20&offset=0",
+              "host": ["{{baseUrl}}"],
+              "path": ["expenses", "{{personId}}"],
+              "query": [
+                {"key": "limit", "value": "20"},
+                {"key": "offset", "value": "0"},
+                {"key": "type", "value": "alimentacion", "disabled": true}
+              ]
+            }
           }
         },
         {

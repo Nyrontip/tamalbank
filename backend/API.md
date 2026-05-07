@@ -78,11 +78,16 @@ curl -X POST http://localhost:8084/api/account/240420241036/deduct \
 
 #### GET `/products`
 
-Lista todos los productos.
+Lista todos los productos con filtro opcional.
 
 ```bash
-curl http://localhost:8084/api/products
+curl "http://localhost:8084/api/products?type=alimentacion"
 ```
+
+**Query Parameters:**
+| Param | Tipo | Descripción |
+|-------|------|-------------|
+| type | string | Filtrar por categoría (alimentacion, servicios, transporte, otros) |
 
 #### GET `/products/{id}`
 
@@ -94,11 +99,18 @@ Producto específico.
 
 #### GET `/expenses/{personId}`
 
-Historial de gastos del usuario.
+Historial de gastos del usuario con paginación.
 
 ```bash
-curl http://localhost:8084/api/expenses/240420241036
+curl "http://localhost:8084/api/expenses/240420241036?limit=20&offset=0&type=alimentacion"
 ```
+
+**Query Parameters:**
+| Param | Tipo | Default | Descripción |
+|-------|------|---------|-------------|
+| limit | int | 20 | Máx resultados (máx 100) |
+| offset | int | 0 | Para paginación |
+| type | string | null | Filtrar por tipo de gasto |
 
 **Errores:** 401 si falta userId, 404 si usuario no existe
 
