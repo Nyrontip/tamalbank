@@ -5,7 +5,6 @@
 
 $requestUri = $_SERVER['REQUEST_URI'];
 $requestMethod = $_SERVER['REQUEST_METHOD'];
-$personId = $_SERVER['HTTP_X_PERSON_ID'] ?? '';
 
 // Remove query string and /api prefix
 $path = parse_url($requestUri, PHP_URL_PATH);
@@ -15,7 +14,10 @@ $path = rtrim($path, '/');
 // Parse route: /endpoint/{id}
 $parts = explode('/', trim($path, '/'));
 $endpoint = $parts[0] ?? '';
-$id = $parts[1] ?? null;
+$id = $parts[1] ?? null; // personId from URL path
+
+// Use path param as personId if present, otherwise header
+$userId = $id ?: ($_SERVER['HTTP_X_PERSON_ID'] ?? '');
 
 // Response helper
 function jsonResponse(array $data, int $code = 0): void {
@@ -29,6 +31,9 @@ $publicEndpoints = ['auth', 'status', 'products'];
 $validEndpoints = ['auth', 'account', 'products', 'expenses', 'tamalbits', 'status'];
 $authRequiredEndpoints = ['expenses', 'tamalbits'];
 
+// Auth check - require user ID in path or header
+$authRequiredEndpoints = ['expenses', 'tamalbits'];
+
 // Basic routing check
 if (!empty($endpoint) && !in_array($endpoint, $publicEndpoints)) {
     // 404 if endpoint doesn't exist
@@ -36,11 +41,19 @@ if (!empty($endpoint) && !in_array($endpoint, $publicEndpoints)) {
         http_response_code(404);
         jsonResponse(['error' => 'Not Found', 'message' => 'Endpoint not found']);
     }
-    // Require X-Person-Id header
+    // Require user ID
     if (in_array($endpoint, $authRequiredEndpoints)) {
-        if (empty($personId)) {
+        if (empty($userId)) {
             http_response_code(401);
-            jsonResponse(['error' => 'Unauthorized', 'message' => 'X-Person-Id header required']);
+            jsonResponse(['error' => 'Unauthorized', 'message' => 'user_id in path or X-Person-Id header required']);
+        }
+        // Verify user exists in external API
+        try {
+            require_once __DIR__ . '/lib/api-client.php';
+            getAccountBalance($userId);
+        } catch (Exception $e) {
+            http_response_code(404);
+            jsonResponse(['error' => 'Not Found', 'message' => 'Usuario no encontrado: ' . $userId]);
         }
     }
 }
@@ -68,11 +81,16 @@ try {
                 http_response_code(405);
                 jsonResponse(['error' => 'Method Not Allowed']);
             }
+            $accountUserId = $id ?: ($_SERVER['HTTP_X_PERSON_ID'] ?? '');
+            if (empty($accountUserId)) {
+                http_response_code(401);
+                jsonResponse(['error' => 'Unauthorized', 'message' => 'user_id required']);
+            }
             require_once __DIR__ . '/api/account.php';
             if ($requestMethod === 'GET') {
-                jsonResponse(handleGetAccount($personId));
+                jsonResponse(handleGetAccount($accountUserId));
             } else {
-                jsonResponse(handleDeductAccount($personId));
+                jsonResponse(handleDeductAccount($accountUserId));
             }
             break;
 
@@ -98,9 +116,9 @@ try {
             }
             require_once __DIR__ . '/api/expenses.php';
             if ($requestMethod === 'GET') {
-                jsonResponse(handleGetExpenses($personId));
+                jsonResponse(handleGetExpenses($userId));
             } else {
-                jsonResponse(handleCreateExpense($personId));
+                jsonResponse(handleCreateExpense($userId));
             }
             break;
 
@@ -111,7 +129,7 @@ try {
                 jsonResponse(['error' => 'Method Not Allowed']);
             }
             require_once __DIR__ . '/api/tamalbits.php';
-            jsonResponse(handleGetTamalbits($personId));
+            jsonResponse(handleGetTamalbits($userId));
             break;
 
         // Status - health check
