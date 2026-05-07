@@ -46,10 +46,7 @@
           "name": "Get Balance",
           "request": {
             "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/account/{{personId}}",
-              "host": ["{{baseUrl}}", "account", "{{personId}}"]
-            },
+            "url": "{{baseUrl}}/account/{{personId}}",
             "header": [
               {
                 "key": "X-Person-Id",
@@ -62,10 +59,7 @@
           "name": "Deduct Balance",
           "request": {
             "method": "POST",
-            "url": {
-              "raw": "{{baseUrl}}/account/{{personId}}/deduct",
-              "host": ["{{baseUrl}}", "account", "{{personId}}"]
-            },
+            "url": "{{baseUrl}}/account/{{personId}}/deduct",
             "header": [
               {
                 "key": "Content-Type",
@@ -108,7 +102,7 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{baseUrl}}/products?type=alimentacion",
+              "raw": "{{baseUrl}}/products",
               "host": ["{{baseUrl}}"],
               "path": ["products"],
               "query": [
@@ -207,7 +201,7 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{baseUrl}}/expenses?limit=5&offset=0",
+              "raw": "{{baseUrl}}/expenses",
               "host": ["{{baseUrl}}"],
               "path": ["expenses"],
               "query": [
@@ -234,7 +228,7 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{baseUrl}}/expenses?type=alimentacion",
+              "raw": "{{baseUrl}}/expenses",
               "host": ["{{baseUrl}}"],
               "path": ["expenses"],
               "query": [
