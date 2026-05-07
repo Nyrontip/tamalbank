@@ -1,0 +1,289 @@
+{
+  "info": {
+    "name": "TamalBank API",
+    "description": "API para gestionar gastos y saldo bancario",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8084/api",
+      "type": "string"
+    },
+    {
+      "key": "personId",
+      "value": "240420241036",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"person_id\": \"{{personId}}\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Account",
+      "item": [
+        {
+          "name": "Get Balance",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/account/{{personId}}",
+              "host": ["{{baseUrl}}", "account", "{{personId}}"]
+            },
+            "header": [
+              {
+                "key": "X-Person-Id",
+                "value": "{{personId}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Deduct Balance",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/account/{{personId}}/deduct",
+              "host": ["{{baseUrl}}", "account", "{{personId}}"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Person-Id",
+                "value": "{{personId}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 10,\n  \"reason\": \"Prueba de descuento\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "List All Products",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/products",
+            "header": []
+          }
+        },
+        {
+          "name": "Get Product by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/products/1",
+            "header": []
+          }
+        },
+        {
+          "name": "Filter by Category",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/products?type=alimentacion",
+              "host": ["{{baseUrl}}"],
+              "path": ["products"],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "alimentacion"
+                }
+              ]
+            },
+            "header": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "Expenses",
+      "item": [
+        {
+          "name": "Create Expense - Orejas de Pollo",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/expenses",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Person-Id",
+                "value": "{{personId}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_id\": 1,\n  \"type\": \"alimentacion\",\n  \"description\": \"Orejas de Pollo para el lunch\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Expense - Servicio de Luz",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/expenses",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Person-Id",
+                "value": "{{personId}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_id\": 6,\n  \"type\": \"servicios\",\n  \"description\": \"Pago de servicio de luz\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Expense - Pasaje Público",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/expenses",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Person-Id",
+                "value": "{{personId}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_id\": 7,\n  \"type\": \"transporte\",\n  \"description\": \"Pasaje al centro\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Expenses",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/expenses",
+            "header": [
+              {
+                "key": "X-Person-Id",
+                "value": "{{personId}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Expenses with Pagination",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/expenses?limit=5&offset=0",
+              "host": ["{{baseUrl}}"],
+              "path": ["expenses"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "5"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "X-Person-Id",
+                "value": "{{personId}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Filter Expenses by Category",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/expenses?type=alimentacion",
+              "host": ["{{baseUrl}}"],
+              "path": ["expenses"],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "alimentacion"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "X-Person-Id",
+                "value": "{{personId}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tamalbits",
+      "item": [
+        {
+          "name": "Get Total Tamalbits",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tamalbits",
+            "header": [
+              {
+                "key": "X-Person-Id",
+                "value": "{{personId}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Status",
+      "item": [
+        {
+          "name": "Get API Status",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/status",
+            "header": []
+          }
+        }
+      ]
+    }
+  ]
+}
