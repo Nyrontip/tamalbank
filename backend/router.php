@@ -49,7 +49,17 @@ try {
         case 'auth':
             if ($requestMethod === 'POST') {
                 require_once __DIR__ . '/api/auth.php';
-                jsonResponse(handleLogin());
+                $result = handleLogin();
+                // Check for 404 in response
+                if (isset($result['user_exists'])) {
+                    $statusCode = $result['user_exists'] ? 200 : 404;
+                } else {
+                    $statusCode = 200;
+                }
+                header('Content-Type: application/json');
+                http_response_code($statusCode);
+                echo json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+                exit;
             }
             break;
             

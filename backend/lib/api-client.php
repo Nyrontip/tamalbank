@@ -66,11 +66,13 @@ function getAccountBalance(string $personId): array {
         ];
     }
     
-    return [
-        'person_id' => $personId,
-        'balance' => 0,
-        'currency' => 'USD',
-    ];
+    // User not found
+    if ($response['status'] === 404) {
+        throw new Exception("User not found");
+    }
+    
+    // Other error
+    throw new Exception("API error: " . ($response['data']['message'] ?? 'Unknown'));
 }
 
 /**

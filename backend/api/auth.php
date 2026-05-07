@@ -18,7 +18,6 @@ function handleLogin(): array {
     try {
         $account = getAccountBalance($personId);
         
-        // If balance >= 0, user exists
         return [
             'success' => true,
             'user_exists' => true,
@@ -26,6 +25,7 @@ function handleLogin(): array {
             'message' => 'Usuario validado correctamente',
         ];
     } catch (Exception $e) {
+        http_response_code(404);
         return [
             'success' => false,
             'user_exists' => false,
