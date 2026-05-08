@@ -91,9 +91,18 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/products",
-              "host": ["{{baseUrl}}"],
-              "path": ["products"],
-              "query": [{"key": "type", "value": "alimentacion"}]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products"
+              ],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "alimentacion"
+                }
+              ]
             }
           }
         }
@@ -108,12 +117,27 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/expenses/{{personId}}?limit=20&offset=0",
-              "host": ["{{baseUrl}}"],
-              "path": ["expenses", "{{personId}}"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "expenses",
+                "{{personId}}"
+              ],
               "query": [
-                {"key": "limit", "value": "20"},
-                {"key": "offset", "value": "0"},
-                {"key": "type", "value": "alimentacion", "disabled": true}
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                },
+                {
+                  "key": "type",
+                  "value": "alimentacion",
+                  "disabled": true
+                }
               ]
             }
           }

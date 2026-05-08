@@ -1,6 +1,7 @@
 /* @refresh reload */
 import { render } from 'solid-js/web';
 import 'solid-devtools';
+import '@fortawesome/fontawesome-free/css/all.css';
 
 import App from './App';
 
