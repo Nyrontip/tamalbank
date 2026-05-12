@@ -10,7 +10,7 @@ export interface Product {
   id: number;
   name: string;
   type: string;
-  price: number;
+  balance: number;
   gives_tamalbits: boolean;
 }
 
@@ -76,7 +76,7 @@ export const api = {
 
   getProducts: (type?: string) => {
     const url = type ? `${API_BASE}/products?type=${type}` : `${API_BASE}/products`;
-    return fetchApi<Product[]>(url);
+    return fetchApi<{ products: Product[] }>(url).then(res => res.products);
   },
 
   getProduct: (id: number) => fetchApi<Product>(`${API_BASE}/products/${id}`),
@@ -87,7 +87,7 @@ export const api = {
     if (options?.offset) params.set('offset', String(options.offset));
     if (options?.type) params.set('type', options.type);
     const query = params.toString();
-    return fetchApi<Expense[]>(`${API_BASE}/expenses/${personId}${query ? `?${query}` : ''}`);
+    return fetchApi<{ expenses: Expense[] }>(`${API_BASE}/expenses/${personId}${query ? `?${query}` : ''}`).then(res => res.expenses);
   },
 
   createExpense: (personId: string, data: { product_id: number; type: string; description: string }) =>
