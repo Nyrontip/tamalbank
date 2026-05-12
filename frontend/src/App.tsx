@@ -80,9 +80,15 @@ const Login: Component<{ onLogin: (id: string) => void }> = (props) => {
   );
 };
 
-const AccountCard: Component<{ personId: string }> = (props) => {
-  const [account] = createResource(() => props.personId, api.getAccount);
-  const [tamalbits] = createResource(() => props.personId, api.getTamalbits);
+const AccountCard: Component<{ personId: string; revision: () => number }> = (props) => {
+  const [account] = createResource(
+    () => ({ key: props.personId, revision: props.revision() }),
+    ({ key }) => api.getAccount(key),
+  );
+  const [tamalbits] = createResource(
+    () => ({ key: props.personId, revision: props.revision() }),
+    ({ key }) => api.getTamalbits(key),
+  );
 
   return (
     <div style={styles.card}>
@@ -106,7 +112,7 @@ const AccountCard: Component<{ personId: string }> = (props) => {
   );
 };
 
-const ProductsList: Component<{ personId: string }> = (props) => {
+const ProductsList: Component<{ personId: string; onPurchase: () => void }> = (props) => {
   const [products] = createResource(() => api.getProducts());
   const [filter, setFilter] = createSignal<string>('');
 
@@ -123,6 +129,7 @@ const ProductsList: Component<{ personId: string }> = (props) => {
         type: product.type,
         description: product.name,
       });
+      props.onPurchase();
       alert(`¡Compraste ${product.name}! 🎉`);
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Error');
@@ -192,8 +199,11 @@ const ProductsList: Component<{ personId: string }> = (props) => {
   );
 };
 
-const ExpensesList: Component<{ personId: string }> = (props) => {
-  const [expenses] = createResource(() => props.personId, () => api.getExpenses(props.personId, { limit: 10 }));
+const ExpensesList: Component<{ personId: string; revision: () => number }> = (props) => {
+  const [expenses] = createResource(
+    () => ({ key: props.personId, revision: props.revision() }),
+    ({ key }) => api.getExpenses(key, { limit: 10 }),
+  );
 
   return (
     <div style={styles.card}>
@@ -224,6 +234,7 @@ const ExpensesList: Component<{ personId: string }> = (props) => {
 
 const App: Component = () => {
   const [personId, setPersonId] = createSignal<string | null>(null);
+  const [revision, setRevision] = createSignal(0);
 
   return (
     <div style={`min-height: 100vh; background: ${COLORS.background};`}>
@@ -241,11 +252,11 @@ const App: Component = () => {
         <Show when={personId()}>
           <h1 style={styles.header}><i class="fas fa-store"></i> TamalStore</h1>
           <div style={styles.grid}>
-            <AccountCard personId={personId()!} />
-            <ProductsList personId={personId()!} />
+            <AccountCard personId={personId()!} revision={revision} />
+            <ProductsList personId={personId()!} onPurchase={() => setRevision(r => r + 1)} />
           </div>
           <div style={`margin-top: 1.5rem;`}>
-            <ExpensesList personId={personId()!} />
+            <ExpensesList personId={personId()!} revision={revision} />
           </div>
         </Show>
       </div>
